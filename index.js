@@ -5,6 +5,10 @@ import { chromium } from 'playwright';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 class AutoLoginCLI {
   constructor() {
@@ -140,10 +144,14 @@ class AutoLoginCLI {
       await this.init();
       
       if (config.login) {
+        // Use environment variables for username and password if available
+        const username = process.env.LOGIN_USERNAME || config.login.username;
+        const password = process.env.LOGIN_PASSWORD || config.login.password;
+        
         const success = await this.login(
           config.login.url,
-          config.login.username,
-          config.login.password,
+          username,
+          password,
           config.login.selectors
         );
         

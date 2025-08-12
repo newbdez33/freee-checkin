@@ -8,6 +8,8 @@ services:
     environment:
       - TZ=Asia/Tokyo  # Set timezone (adjust as needed)
       - NODE_ENV=production
+    env_file:
+      - .env  # Load environment variables from .env file
     volumes:
       - ./logs:/var/log/auto-checkin
       - ./screenshots:/app/screenshots

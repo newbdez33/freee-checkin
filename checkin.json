@@ -1,8 +1,6 @@
 {
   "login": {
     "url": "https://p.secure.freee.co.jp/",
-    "username": "jie.zhang@grandchallenge.co.jp",
-    "password": "x",
     "selectors": {
       "username": "input[name='loginId']",
       "password": "input[name='password']",
