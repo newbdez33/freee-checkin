@@ -7,8 +7,7 @@ Auto check in script
    LOGIN_USERNAME=your_username@example.com
    LOGIN_PASSWORD=your_password
    ```
-2. Config files `checkin.json` and `checkout.json` for check in and check out actions.
-3. crontab
+2. Update the crontab for checkin and checkout time.
 
 ## Run
 ```bash
