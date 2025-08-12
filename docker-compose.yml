@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  auto-checkin:
+    build: .
+    container_name: auto-checkin-app
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Tokyo  # Set timezone (adjust as needed)
+      - NODE_ENV=production
+    volumes:
+      - ./logs:/var/log/auto-checkin
+      - ./screenshots:/app/screenshots
+    networks:
+      - auto-checkin-network
+    
+    # Uncomment if you want to expose a health check endpoint
+    # ports:
+    #   - "3000:3000"
+
+networks:
+  auto-checkin-network:
+    driver: bridge

@@ -1,0 +1,22 @@
+{
+  "name": "auto-login-cli",
+  "version": "1.0.0",
+  "description": "CLI app for automated website login and actions",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "auto-login": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "install-browsers": "playwright install"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "commander": "^11.1.0",
+    "chalk": "^5.3.0"
+  },
+  "keywords": ["cli", "automation", "login", "playwright"],
+  "author": "",
+  "license": "MIT"
+}
