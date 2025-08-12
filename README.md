@@ -1,18 +1,18 @@
-# 自动签到
-自动签到是一个简单的脚本，用于自动签到。
+# Fuck Freee CheckIn
+Auto check in script
 
-## 安装
+## Install
 ```bash
-# Node 环境 19 以上
+# Node v19 and up
 npm install
 npm run install-browsers
 ```
 
-## 配置
-1. 配置文件为`checkin.json`和`checkout.json`，分别为签到和签出的配置文件。
+## Setup
+1. Config files `checkin.json` and `checkout.json` for check in and check out.
 2. crontab
 
-## 运行
+## Run
 ```bash
 docker-compose up --build -d
 ```
