@@ -1,7 +1,7 @@
 # Check-in at 10:00 AM every day
-0 10 * * * cd /app && node index.js run checkin.json >> /var/log/auto-checkin/checkin.log 2>&1
+52 11 * * * /app/run-cron.sh node index.js run checkin.json >> /var/log/auto-checkin/checkin.log 2>&1
 
 # Check-out at 8:00 PM every day  
-0 20 * * * cd /app && node index.js run checkout.json >> /var/log/auto-checkin/checkout.log 2>&1
+0 20 * * * /app/run-cron.sh node index.js run checkout.json >> /var/log/auto-checkin/checkout.log 2>&1
 
 # Empty line required at end of cron file
