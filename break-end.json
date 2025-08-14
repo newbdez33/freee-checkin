@@ -1,0 +1,37 @@
+{
+  "login": {
+    "url": "https://p.secure.freee.co.jp/",
+    "selectors": {
+      "username": "input[name='loginId']",
+      "password": "input[name='password']",
+      "submit": "button[type='submit']"
+    }
+  },
+  "actions": [
+    {
+      "type": "wait",
+      "timeout": 3000,
+      "description": "Wait for page to fully load after login"
+    },
+    {
+      "type": "wait",
+      "selector": "[data-testid=\"休憩終了\"]",
+      "description": "Wait for button to appear"
+    },
+    {
+      "type": "screenshot",
+      "path": "/app/screenshots/break-end-before.png",
+      "description": "Screenshot before break-end"
+    },
+    {
+      "type": "click",
+      "selector": "[data-testid=\"休憩終了\"]",
+      "wait": 3000
+    },
+    {
+      "type": "screenshot",
+      "path": "/app/screenshots/break-end-after.png",
+      "description": "Screenshot after break-end"
+    }
+  ]
+}
