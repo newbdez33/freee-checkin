@@ -10,6 +10,64 @@ import dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
+// Japanese holidays for 2024-2026 (can be extended)
+const JAPANESE_HOLIDAYS = {
+  2025: [
+    '2025-01-01', // New Year's Day
+    '2025-01-13', // Coming of Age Day
+    '2025-02-11', // National Foundation Day
+    '2025-02-23', // Emperor's Birthday
+    '2025-02-24', // Emperor's Birthday (observed)
+    '2025-03-20', // Vernal Equinox Day
+    '2025-04-29', // Showa Day
+    '2025-05-03', // Constitution Memorial Day
+    '2025-05-04', // Greenery Day
+    '2025-05-05', // Children's Day
+    '2025-05-06', // Children's Day (observed)
+    '2025-07-21', // Marine Day
+    '2025-08-11', // Mountain Day
+    '2025-09-15', // Respect for the Aged Day
+    '2025-09-23', // Autumnal Equinox Day
+    '2025-10-13', // Sports Day
+    '2025-11-03', // Culture Day
+    '2025-11-23', // Labor Thanksgiving Day
+    '2025-11-24', // Labor Thanksgiving Day (observed)
+  ],
+  2026: [
+    '2026-01-01', // New Year's Day
+    '2026-01-12', // Coming of Age Day
+    '2026-02-11', // National Foundation Day
+    '2026-02-23', // Emperor's Birthday
+    '2026-03-20', // Vernal Equinox Day
+    '2026-04-29', // Showa Day
+    '2026-05-03', // Constitution Memorial Day
+    '2026-05-04', // Greenery Day
+    '2026-05-05', // Children's Day
+    '2026-05-06', // Children's Day (observed)
+    '2026-07-20', // Marine Day
+    '2026-08-11', // Mountain Day
+    '2026-09-21', // Respect for the Aged Day
+    '2026-09-22', // Autumnal Equinox Day (estimated)
+    '2026-09-23', // Autumnal Equinox Day (observed)
+    '2026-10-12', // Sports Day
+    '2026-11-03', // Culture Day
+    '2026-11-23', // Labor Thanksgiving Day
+  ]
+};
+
+/**
+ * Check if the current date is a Japanese holiday
+ * @returns {boolean} True if today is a Japanese holiday
+ */
+function isJapaneseHoliday() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const dateString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  
+  const holidaysForYear = JAPANESE_HOLIDAYS[year] || [];
+  return holidaysForYear.includes(dateString);
+}
+
 class AutoLoginCLI {
   constructor() {
     this.browser = null;
@@ -139,6 +197,13 @@ class AutoLoginCLI {
 
   async runScript(configPath) {
     try {
+      // Check if today is a Japanese holiday
+      if (isJapaneseHoliday()) {
+        const today = new Date().toISOString().split('T')[0];
+        console.log(chalk.yellow(`⛩️  Skipping execution - Today (${today}) is a Japanese holiday`));
+        return;
+      }
+
       const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       
       await this.init();
