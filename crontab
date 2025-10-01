@@ -1,11 +1,11 @@
-# Check-in at 10:00 AM every day
-0 10 * * * /app/run-cron.sh node index.js run checkin.json >> /var/log/auto-checkin/checkin.log 2>&1
+# Check-in at 10:00 AM on weekdays only (Monday-Friday)
+0 10 * * 1-5 /app/run-cron.sh node index.js run checkin.json >> /var/log/auto-checkin/checkin.log 2>&1
 
-# Check-out at 8:00 PM every day  
-0 20 * * * /app/run-cron.sh node index.js run checkout.json >> /var/log/auto-checkin/checkout.log 2>&1
+# Check-out at 8:00 PM on weekdays only (Monday-Friday)
+0 20 * * 1-5 /app/run-cron.sh node index.js run checkout.json >> /var/log/auto-checkin/checkout.log 2>&1
 
-# Breaks
-0 12 * * * /app/run-cron.sh node index.js run break-start.json >> /var/log/auto-checkin/break-start.log 2>&1
-0 13 * * * /app/run-cron.sh node index.js run break-end.json >> /var/log/auto-checkin/break-end.log 2>&1
+# Breaks on weekdays only (Monday-Friday)
+0 12 * * 1-5 /app/run-cron.sh node index.js run break-start.json >> /var/log/auto-checkin/break-start.log 2>&1
+0 13 * * 1-5 /app/run-cron.sh node index.js run break-end.json >> /var/log/auto-checkin/break-end.log 2>&1
 
 # Empty line required at end of cron file
