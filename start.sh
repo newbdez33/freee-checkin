@@ -3,6 +3,9 @@
 # Create necessary directories
 mkdir -p /var/log/auto-checkin
 mkdir -p /app/screenshots
+touch /var/log/auto-checkin/cron.log
+# Redirect cron log to persistent volume
+ln -sf /var/log/auto-checkin/cron.log /var/log/cron.log
 
 # Start cron daemon
 echo "Starting cron daemon..."
@@ -17,8 +20,8 @@ echo ""
 echo "Container is running. Press Ctrl+C to stop."
 
 # Tail the log files to keep container alive and show output
-tail -f /var/log/auto-checkin/*.log /var/log/cron.log 2>/dev/null || (
+tail -f /var/log/auto-checkin/*.log 2>/dev/null || (
     echo "Waiting for log files to be created..."
     sleep 30
-    tail -f /var/log/auto-checkin/*.log /var/log/cron.log 2>/dev/null || sleep infinity
+    tail -f /var/log/auto-checkin/*.log 2>/dev/null || sleep infinity
 )

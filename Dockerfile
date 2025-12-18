@@ -39,7 +39,7 @@ RUN chmod +x /start.sh
 RUN chmod +x /app/run-cron.sh
 
 # Create the log file to be able to run tail
-RUN touch /var/log/cron.log
+# Cron will write to /var/log/cron.log; redirect this to the app log volume at runtime
 
 # Expose port (optional, for health checks)
 EXPOSE 3000
