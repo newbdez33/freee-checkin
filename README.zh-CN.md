@@ -110,8 +110,8 @@
    ```
 5. 观察：
    ```powershell
-   kubectl get pods -n freee-checkin
-   kubectl logs deploy/freee-checkin -n freee-checkin -f --tail=200
+   kubectl get pods -n fuck-checkin
+   kubectl logs deploy/fuck-checkin -n fuck-checkin -f --tail=200
    ```
 
 ## 维护
