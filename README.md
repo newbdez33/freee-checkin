@@ -1,4 +1,4 @@
-# Fuck Freee CheckIn
+# Freee check-in
 Automated Freee attendance actions (check-in, check-out, break start/end) using a Playwright-powered Node.js CLI, scheduled via cron inside a Docker container. Skips weekends and Japanese national holidays.
 
 ## Features
@@ -110,8 +110,8 @@ Prerequisites:
    ```
 5. Observe:
    ```powershell
-   kubectl get pods -n fuck-checkin
-   kubectl logs deploy/fuck-checkin -n fuck-checkin -f --tail=200
+   kubectl get pods -n freee-checkin
+   kubectl logs deploy/freee-checkin -n freee-checkin -f --tail=200
    ```
 
 ## Maintenance
@@ -129,7 +129,7 @@ Prerequisites:
   - /mnt/tank/apps/auto-checkin/logs
   - /mnt/tank/apps/auto-checkin/screenshots
 - Option A: Apps → Launch Docker Image
-  - Image: ghcr.io/newbdez33/fuck-freee-checkin:latest
+  - Image: ghcr.io/newbdez33/freee-checkin:latest
   - Environment:
     - TZ=Asia/Tokyo
     - NODE_ENV=production
@@ -144,7 +144,7 @@ Prerequisites:
     ```yaml
     services:
       auto-checkin:
-        image: ghcr.io/newbdez33/fuck-freee-checkin:latest
+        image: ghcr.io/newbdez33/freee-checkin:latest
         container_name: auto-checkin-app
         restart: unless-stopped
         environment:

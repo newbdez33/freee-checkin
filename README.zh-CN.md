@@ -1,4 +1,4 @@
-# Fuck Freee CheckIn（中文）
+# Freee check-in（中文）
 使用基于 Playwright 的 Node.js CLI 在 Docker 容器内通过 cron 定时执行 Freee 考勤操作（上班、下班、休息开始/结束）。自动跳过周末与日本法定节假日。
 
 ## 功能
@@ -110,8 +110,8 @@
    ```
 5. 观察：
    ```powershell
-   kubectl get pods -n fuck-checkin
-   kubectl logs deploy/fuck-checkin -n fuck-checkin -f --tail=200
+   kubectl get pods -n freee-checkin
+   kubectl logs deploy/freee-checkin -n freee-checkin -f --tail=200
    ```
 
 ## 维护
@@ -129,7 +129,7 @@
   - /mnt/tank/apps/auto-checkin/logs
   - /mnt/tank/apps/auto-checkin/screenshots
 - 方式 A：Apps → Launch Docker Image
-  - 镜像：ghcr.io/newbdez33/fuck-freee-checkin:latest
+  - 镜像：ghcr.io/newbdez33/freee-checkin:latest
   - 环境变量：
     - TZ=Asia/Tokyo
     - NODE_ENV=production
@@ -144,7 +144,7 @@
     ```yaml
     services:
       auto-checkin:
-        image: ghcr.io/newbdez33/fuck-freee-checkin:latest
+        image: ghcr.io/newbdez33/freee-checkin:latest
         container_name: auto-checkin-app
         restart: unless-stopped
         environment:
