@@ -1,121 +1,175 @@
 # Fuck Freee CheckIn
-Auto check in script with Japanese holiday detection
+Automated Freee attendance actions (check-in, check-out, break start/end) using a Playwright-powered Node.js CLI, scheduled via cron inside a Docker container. Skips weekends and Japanese national holidays.
 
 ## Features
-- ⏰ Automatic check-in/check-out scheduling
-- 🎌 Japanese holiday detection (2024-2026)
-- 📅 Weekend skipping (Monday-Friday only)
-- 🐳 Docker containerized deployment
+- Automatic check-in/check-out and break actions on weekdays
+- Japanese holiday detection for 2025–2026
+- Weekend skipping (Monday–Friday only)
+- Dockerized runtime with cron scheduling
+- Kubernetes manifests for cluster deployment
+- Logs and screenshots persisted to host volumes
 
-## Setup
-1. Create a `.env` file with your login credentials:
+## Tech Stack
+- Node.js (ES modules), CLI via Commander
+- Playwright (Chromium)
+- Dotenv for environment variables
+- Docker, Docker Compose
+- Kubernetes Deployment/Namespace/PVCs
+
+## Quick Start (Docker Compose)
+1. Create a `.env` file:
    ```
    LOGIN_USERNAME=your_username@example.com
    LOGIN_PASSWORD=your_password
    ```
-2. Update the crontab for checkin and checkout time.
+2. Start:
+   ```bash
+   docker-compose up --build -d
+   ```
+3. Logs:
+   ```bash
+   docker-compose logs -f auto-checkin
+   ```
+4. Screenshots and logs are available on the host:
+   - logs → ./logs
+   - screenshots → ./screenshots
 
-## Run
-```bash
-docker-compose up --build -d
-```
+## Local Development
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Install Playwright browsers:
+   ```bash
+   npm run install-browsers
+   ```
+3. Set environment variables (or use `.env`):
+   ```
+   LOGIN_USERNAME=...
+   LOGIN_PASSWORD=...
+   ```
+4. Run a task:
+   ```bash
+   node index.js run checkin.json
+   node index.js run checkout.json
+   node index.js run break-start.json
+   node index.js run break-end.json
+   ```
+5. CLI help:
+   ```bash
+   node index.js --help
+   ```
 
-## Development & Updates
+## Configuration
+- Environment variables are read from `.env`:
+  - LOGIN_USERNAME
+  - LOGIN_PASSWORD
+- Timezone defaults to Asia/Tokyo inside the container.
+- Task JSON files define actions:
+  - [checkin.json](file:///c:/Users/newbd/projects/fuck-freee-checkin/checkin.json)
+  - [checkout.json](file:///c:/Users/newbd/projects/fuck-freee-checkin/checkout.json)
+  - [break-start.json](file:///c:/Users/newbd/projects/fuck-freee-checkin/break-start.json)
+  - [break-end.json](file:///c:/Users/newbd/projects/fuck-freee-checkin/break-end.json)
 
-### After Code Changes
-When you update the code (e.g., adding new holidays, modifying logic), you need to rebuild and restart the Docker container:
-
-```bash
-# Stop the current container
-docker-compose down
-
-# Rebuild the image with updated code
-docker-compose build
-
-# Start the container with the new image
-docker-compose up -d
-
-# Check container status
-docker-compose ps
-```
-
-### Quick Restart (Alternative)
-```bash
-# One-liner to rebuild and restart
-docker-compose down && docker-compose build && docker-compose up -d
-```
-
-### View Logs
-```bash
-# View container logs
-docker-compose logs -f auto-checkin
-
-# View specific log files
-docker-compose exec auto-checkin tail -f /var/log/auto-checkin/checkin.log
-```
+## Cron Schedule
+- Weekdays only:
+  - 10:00 check-in
+  - 12:00 break start
+  - 13:00 break end
+  - 20:00 check-out
+- Edit schedule in [crontab](file:///c:/Users/newbd/projects/fuck-freee-checkin/crontab). Rebuild the image after changes.
 
 ## Holiday Management
-The system automatically skips execution on:
-- **Weekends** (Saturday & Sunday)
-- **Japanese National Holidays** (2025-2026)
-
-To add more years or modify holidays, update the `JAPANESE_HOLIDAYS` object in `index.js` and rebuild the container.
+- Holidays are defined in [index.js](file:///c:/Users/newbd/projects/fuck-freee-checkin/index.js#L13-L56).
+- To extend to more years, update `JAPANESE_HOLIDAYS` and rebuild.
+- Execution is skipped on holidays and weekends.
 
 ## Kubernetes Deployment
+Prerequisites:
+- A Kubernetes cluster and `kubectl` configured.
 
-### Prerequisites
-- A Kubernetes cluster (e.g., MicroK8s, K3s, Minikube, or a managed cloud cluster)
-- `kubectl` configured to connect to your cluster
+1. Namespace:
+   ```powershell
+   kubectl apply -f k8s/00-namespace.yaml
+   ```
+2. Persistent storage:
+   ```powershell
+   kubectl apply -f k8s/01-pvc.yaml
+   ```
+   Adjust `storageClassName` to your cluster if needed.
+3. Secret (environment file mounted as `.env`):
+   - Copy and edit:
+     - [k8s/02-secret.example.yaml](file:///c:/Users/newbd/projects/fuck-freee-checkin/k8s/02-secret.example.yaml) → `k8s/02-secret.yaml`
+   - Apply:
+     ```powershell
+     kubectl apply -f k8s/02-secret.yaml
+     ```
+4. Deployment:
+   ```powershell
+   kubectl apply -f k8s/03-deployment.yaml
+   ```
+5. Observe:
+   ```powershell
+   kubectl get pods -n fuck-checkin
+   kubectl logs deploy/fuck-checkin -n fuck-checkin -f --tail=200
+   ```
 
-### Environment Setup (PowerShell)
-Define the kubeconfig path variable for easier command execution:
-```powershell
-$kube = "C:\Users\jacky\AppData\Roaming\Lens\kubeconfigs\b6f0cc16-28e2-49a4-9303-a9ecee6d2725-pasted-kubeconfig.yaml"
-```
+## Maintenance
+- Rebuild after code changes:
+  ```bash
+  docker-compose down && docker-compose build && docker-compose up -d
+  ```
+- View specific log files:
+  ```bash
+  docker-compose exec auto-checkin tail -f /var/log/auto-checkin/checkin.log
+  ```
 
-### 1. Create Namespace
-```powershell
-kubectl apply -f k8s/00-namespace.yaml --kubeconfig $kube
-```
+## TrueNAS SCALE
+- Create datasets for persistence, for example:
+  - /mnt/tank/apps/auto-checkin/logs
+  - /mnt/tank/apps/auto-checkin/screenshots
+- Option A: Apps → Launch Docker Image
+  - Image: ghcr.io/newbdez33/fuck-freee-checkin:latest
+  - Environment:
+    - TZ=Asia/Tokyo
+    - NODE_ENV=production
+    - LOGIN_USERNAME=your_username@example.com
+    - LOGIN_PASSWORD=your_password
+  - Host path mounts:
+    - /mnt/tank/apps/auto-checkin/logs → /var/log/auto-checkin
+    - /mnt/tank/apps/auto-checkin/screenshots → /app/screenshots
+  - Deploy and check logs from the app details page.
+- Option B: Apps → Docker Compose
+  - Use a simplified compose with the published image:
+    ```yaml
+    services:
+      auto-checkin:
+        image: ghcr.io/newbdez33/fuck-freee-checkin:latest
+        container_name: auto-checkin-app
+        restart: unless-stopped
+        environment:
+          TZ: Asia/Tokyo
+          NODE_ENV: production
+          LOGIN_USERNAME: your_username@example.com
+          LOGIN_PASSWORD: your_password
+        volumes:
+          - /mnt/tank/apps/auto-checkin/logs:/var/log/auto-checkin
+          - /mnt/tank/apps/auto-checkin/screenshots:/app/screenshots
+    ```
+  - Deploy. Cron inside the container will execute tasks at the configured times.
+- Updates
+  - Launch Docker Image: Redeploy the app to pull the latest image.
+  - Docker Compose: Pull and redeploy the stack from the app page.
+- Notes
+  - Playwright images are large; ensure sufficient space on the node.
+  - Timezone is set via TZ; schedules run in Asia/Tokyo by default.
 
-### 2. Configure Persistent Storage
-This project uses Persistent Volume Claims (PVCs) for logs and screenshots.
-**Note:** The provided manifest (`k8s/01-pvc.yaml`) uses `storageClassName: microk8s-hostpath`. If you are not using MicroK8s, please edit the file to match your cluster's storage class (or remove it to use the default).
+## Key Files
+- Entry/CLI: [index.js](file:///c:/Users/newbd/projects/fuck-freee-checkin/index.js)
+- Compose: [docker-compose.yml](file:///c:/Users/newbd/projects/fuck-freee-checkin/docker-compose.yml)
+- Dockerfile: [Dockerfile](file:///c:/Users/newbd/projects/fuck-freee-checkin/Dockerfile)
+- Cron: [crontab](file:///c:/Users/newbd/projects/fuck-freee-checkin/crontab), runner [run-cron.sh](file:///c:/Users/newbd/projects/fuck-freee-checkin/run-cron.sh), startup [start.sh](file:///c:/Users/newbd/projects/fuck-freee-checkin/start.sh)
+- Kubernetes: [00-namespace.yaml](file:///c:/Users/newbd/projects/fuck-freee-checkin/k8s/00-namespace.yaml), [01-pvc.yaml](file:///c:/Users/newbd/projects/fuck-freee-checkin/k8s/01-pvc.yaml), [03-deployment.yaml](file:///c:/Users/newbd/projects/fuck-freee-checkin/k8s/03-deployment.yaml)
 
-```powershell
-kubectl apply -f k8s/01-pvc.yaml --kubeconfig $kube
-```
-
-### 3. Setup Secrets
-Create the secret containing your environment variables.
-1. Edit `k8s/02-secret.yaml` with your actual credentials.
-2. Apply the secret:
-
-```powershell
-kubectl apply -f k8s/02-secret.yaml --kubeconfig $kube
-```
-
-### 4. Deploy Application
-Deploy the application with the recommended configuration (Image Pull Policy set to `IfNotPresent` to save bandwidth/storage).
-
-```powershell
-kubectl apply -f k8s/03-deployment.yaml --kubeconfig $kube
-```
-
-### Maintenance & Troubleshooting
-
-**Check Status**
-```powershell
-kubectl get pods -n fuck-checkin --kubeconfig $kube
-```
-
-**View Logs**
-```powershell
-kubectl logs deploy/fuck-checkin -n fuck-checkin --tail=200 -f --kubeconfig $kube
-```
-
-**Common Issues**
-- **Evicted Pods**: If you see `Evicted` status, it's often due to node disk pressure (ephemeral-storage).
-  - *Fix*: Clean up unused images on the node (`microk8s ctr images prune`) or ensure the `imagePullPolicy` is `IfNotPresent` to avoid re-downloading large images.
-- **Image Pull Errors**: Ensure the image name/tag is correct and accessible.
-
+## License
+MIT (see [package.json](file:///c:/Users/newbd/projects/fuck-freee-checkin/package.json))
